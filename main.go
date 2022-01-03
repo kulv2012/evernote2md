@@ -45,7 +45,7 @@ func main() {
 	flaggy.String(&tagTemplate, "t", "tagTemplate", "Define how Evernote tags are formatted")
 	flaggy.String(&outputOverride, "o", "outputDir", "Override the directory where markdown files will be created")
 
-	flaggy.Bool(&folders, "", "folders", "Put every note in a separate folder")
+	flaggy.Bool(&folders, "", "folders", "Put every note in the last tag, tag is sorted by literal")
 	flaggy.Bool(&noHighlights, "", "noHighlights", "Disable converting Evernote highlights to inline HTML tags")
 	flaggy.Bool(&resetTimestamps, "", "resetTimestamps", "Create files ignoring timestamps in the note attributes")
 	flaggy.Bool(&addFrontMatter, "", "addFrontMatter", "Prepend FrontMatter to markdown files")
@@ -79,16 +79,27 @@ func run(files []string, output *noteFilesDir, progress *pb.ProgressBar, c *inte
 	progress.Start()
 	n := export.Notes
 	for i := range n {
-		log.Printf("[DEBUG] Converting a note: %s", n[i].Title)
+        log.Printf("[DEBUG] Converting a note: %s, tags:%s", n[i].Title, n[i].Tags)
 		md, err := c.Convert(&n[i])
 		failWhen(err)
-		err = output.SaveNote(n[i].Title, md)
+		err = output.SaveNote(selectTag(n[i].Tags), n[i].Title, md)
 		_ = fmt.Errorf("[ERROR] %w", err)
 
 		progress.Increment()
 	}
 	progress.Finish()
 	fmt.Println("Done!")
+}
+func selectTag(tags[]string) string{
+
+    for i := range tags{
+        if tags[i][0] == '0'{
+            log.Printf("tag select:%s", tags[i])
+            return tags[i]
+        }
+    }
+
+    return ""
 }
 
 const progressBarTmpl = `Notes: {{counters .}} {{bar . "[" "=" ">" "_" "]" }} {{percent .}} {{etime .}}`

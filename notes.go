@@ -33,11 +33,16 @@ func newNoteFilesDir(output string, folders, timestamps bool) *noteFilesDir {
 }
 
 // SaveNote along with media resources
-func (d *noteFilesDir) SaveNote(title string, md *markdown.Note) error {
+func (d *noteFilesDir) SaveNote(tag string, title string, md *markdown.Note) error {
 	path := d.path
 	if d.flagFolders {
-		path = filepath.Join(d.path, d.uniqueName(title))
-		title = "README.md"
+        if tag != ""{
+            path = filepath.Join(d.path, d.uniqueName(tag))
+        }else{
+            path = "common"
+        }
+        //title = "README.md"
+		title = d.uniqueName(title) + ".md"
 	} else {
 		title = d.uniqueName(title) + ".md"
 	}

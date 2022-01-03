@@ -20,7 +20,9 @@ func (c *Converter) prependTags(note *enex.Note, md *markdown.Note) {
 		return
 	}
 	md.Content = append([]byte("\n\n"), md.Content...)
-	md.Content = append([]byte(c.tagList(note, c.TagTemplate, " ", c.TagTemplate != DefaultTagTemplate)), md.Content...)
+    tagstr := c.tagList(note, c.TagTemplate, " ", c.TagTemplate != DefaultTagTemplate)
+	md.Content = append([]byte(tagstr), md.Content...)
+    return 
 }
 
 func (c *Converter) tagList(note *enex.Note, tagTemplate string, joinString string, spacesToUnderscores bool) string {
