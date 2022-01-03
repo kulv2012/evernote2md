@@ -37,7 +37,7 @@ func (d *noteFilesDir) SaveNote(tag string, title string, md *markdown.Note) err
 	path := d.path
 	if d.flagFolders {
         if tag != ""{
-            path = filepath.Join(d.path, d.uniqueName(tag))
+            path = filepath.Join(d.path, tag)
         }else{
             path = "common"
         }
